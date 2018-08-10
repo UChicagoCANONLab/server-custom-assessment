@@ -12,6 +12,8 @@ app.use(function(req, res) {
 */
 
 app.get('/', function(req, res) {
+	res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 	
 	Scratch.getProject(id,function(err,project) {
   		if(err) throw err;
