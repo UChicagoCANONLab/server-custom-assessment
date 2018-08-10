@@ -9,21 +9,10 @@ var id = 192728047;
 app.use(cors())
 
 app.get('/:id', function(req, res) {
-	//res.header("Access-Control-Allow-Origin", "*");
-    //res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-	
 	Scratch.getProject(req.params.id,function(err,project) {
   		if(err) throw err;
   		res.send(JSON.stringify(project));
-  		//res.send("hi");
   	});
  });
 
 app.listen(port, function() {console.log(`Example app listening on port http://localhost:${port}/`)});
-
-/*
-Scratch.getProject(id,function(err,project) {
-      if(err) throw err;
-      console.log(JSON.stringify(project));
-});
-*/
