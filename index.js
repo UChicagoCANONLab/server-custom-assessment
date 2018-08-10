@@ -4,6 +4,12 @@ const Scratch = require('./scratchapi.js');
 const port = process.env.PORT || 3000;
 var id = 192728047;
 
+
+app.use(function(req, res) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+});
+
 app.get('/', function(req, res) {
 	
 	Scratch.getProject(id,function(err,project) {
