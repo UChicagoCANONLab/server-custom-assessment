@@ -4,15 +4,20 @@
   "description": "scratch jsons",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/connorhopcraft/server-automated-assessment.git"
   },
   "author": "Connor Hopcraft",
   "license": "ISC",
-  "dependencies": {
-    "express": "^4.16.3",
-    "scratch-api": "^1.1.8"
+  "bugs": {
+    "url": "https://github.com/connorhopcraft/server-automated-assessment/issues"
   },
-  "engines": {
-    "node": "6.11.3"
+  "homepage": "https://github.com/connorhopcraft/server-automated-assessment#readme",
+  "dependencies": {
+    "express": "^4.16.3"
   }
 }
