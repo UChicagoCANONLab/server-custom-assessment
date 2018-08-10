@@ -346,3 +346,5 @@ Scratch.CloudSession.prototype._addVariable = function(name, value) {
 };
 
 module.exports = Scratch;
+
+
