@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/connorhopcraft/server-automated-assessment#readme",
   "dependencies": {
+    "cors": "^2.8.4",
     "express": "^4.16.3",
     "ws": "^6.0.0"
   }
