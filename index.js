@@ -1,4 +1,5 @@
 const express = require('express');
+var cors = require('cors')
 const app = express();
 const Scratch = require('./scratchapi.js');
 const port = process.env.PORT || 3000;
