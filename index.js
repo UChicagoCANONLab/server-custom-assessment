@@ -15,10 +15,6 @@ app.get('/:id([0-9])', function(req, res) {
   	});
  });
 
-app.get('*', function(req, res){
-   res.send('Sorry, this is an invalid URL.');
-});
-
 app.listen(port, function() {console.log(`Example app listening on port http://localhost:${port}/`)});
 
 /*
