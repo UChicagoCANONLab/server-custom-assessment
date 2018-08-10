@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-//const Scratch = require('./scratchapi.js');
+const Scratch = require('./scratchapi.js');
 const port = process.env.PORT || 3000;
 var id = 192728047;
 
