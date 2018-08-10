@@ -4,7 +4,7 @@ const Scratch = require('./scratchapi.js');
 const port = process.env.PORT || 3000;
 var id = 192728047;
 
-app.get('/:id', function(req, res) {
+app.get('/:id([0-9])', function(req, res) {
 	res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 	
@@ -12,10 +12,12 @@ app.get('/:id', function(req, res) {
   		if(err) throw err;
   		res.send(JSON.stringify(project));
   		//res.send("hi");
-
   	});
-  	
  });
+
+app.get('*', function(req, res){
+   res.send('Sorry, this is an invalid URL.');
+});
 
 app.listen(port, function() {console.log(`Example app listening on port http://localhost:${port}/`)});
 
