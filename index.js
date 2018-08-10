@@ -8,8 +8,8 @@ app.get('/', function(req, res) {
 	
 	Scratch.getProject(id,function(err,project) {
   		if(err) throw err;
-  		//res.send(JSON.stringify(project));
-  		res.send("hi");
+  		res.send(JSON.stringify(project));
+  		//res.send("hi");
 
   	});
   	
