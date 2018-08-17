@@ -9,15 +9,18 @@ app.use(cors());
 
 app.get('/:id', function(req, res) {
     var id = req.params.id;
-    Scratch.getProject(id,function(err,project) {
-      if(err) {
-      	console.log(err);
-      	res.send("Fetch error.");
-      }
-      res.send(JSON.stringify(project));
-
-      
-    });
+    try {
+	    Scratch.getProject(id,function(err,project) {
+	      if(err) {
+	      	console.log(err);
+	      	res.send("Fetch error.");
+	      }
+	      res.send(JSON.stringify(project));
+    	});
+	}
+	catch(err) {
+		res.send("Fetch error.");
+	}
  });
 
 
