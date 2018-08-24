@@ -6,6 +6,7 @@ var crypto = require('crypto');
 var fs = require('fs');
 var WebSocket = require('ws');
 
+
 var SERVER = 'scratch.mit.edu';
 var PROJECTS_SERVER = 'projects.scratch.mit.edu';
 var CDN_SERVER = 'cdn.scratch.mit.edu';
