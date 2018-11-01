@@ -1,5 +1,5 @@
 #Jean Salac
-#Unit 2 Question Generator. Run with the following command: python unit2QuestionGenerator.py fileWithProjectURLs.txt
+#Unit 2 Question Generator. Run with the following command: python unit2QuestionGenerator.py studentInfo.csv
 
 import sys
 import json
@@ -853,10 +853,7 @@ def main():
 				print>>customTest, "Script "+str(x)+":"
 				print>>customTest, question.scrBlks[x]
 
-			#Count the number of blocks in Q6 or Q7
-			if question.ID == 'Question 6':
-				project.lenQ6 = question.scrBlks[0].count('\n')
-
+			#Count the number of blocks in Q7
 			if question.ID == 'Question 7':
 				project.lenQ7 = question.scrBlks[0].count('\n')
 
