@@ -51,7 +51,7 @@ app.post('/', upload.single('file-to-upload'), function(req, res, next) {
 
 
 
-  const child = execFile('./run_unit2gen.sh', [req.file.destination], (error, stdout, stderr) => {
+  const child = execFile('./run_unit2gen.sh', [req.file.destination, 'template/'], (error, stdout, stderr) => {
 	  if (error) {
 	    throw error;
 	  }
