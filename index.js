@@ -2,14 +2,17 @@
 const express = require('express');
 var cors = require('cors');
 const multer = require('multer');
-
+var mkdirp = require('mkdirp');
+var rimraf = require('rimraf');
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'repdfgeneratorcode/');
+  	var name = 'up' + Date.now() + '/'
+  	mkdirp(name, function(err) {});
+    cb(null, name)
   },
   filename: function (req, file, cb) {
-    cb(null, 'students.csv');
+    cb(null, 'students.csv')
   }
 })
  
@@ -41,13 +44,21 @@ app.get('/', function(req, res, next) {
 app.post('/', upload.single('file-to-upload'), function(req, res, next) {
 	//res.redirect('/');
 	//res.sendFile(path.join(__dirname, '../server-pdf-gen/repdfgeneratorcode', 'students.csv'));
+	/*console.log(req.file.destination);
+	console.log(req.file.filename);
+	console.log(Date.now());
+*/
 
-  const child = execFile('./run_generator.sh', ['students.csv'], (error, stdout, stderr) => {
+
+
+  const child = execFile('./run_unit2gen.sh', [req.file.destination], (error, stdout, stderr) => {
 	  if (error) {
 	    throw error;
 	  }
 	  console.log(stdout);
-	  res.sendFile(path.join(__dirname, '../server-pdf-gen/repdfgeneratorcode', 'all_tests.pdf'));
+	  res.sendFile(path.join(__dirname, req.file.destination, 'all_tests.pdf'));
+	  rimraf(req.file.destination, function () { console.log('done'); });
+
   });
   
   
