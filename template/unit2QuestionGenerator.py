@@ -1,5 +1,5 @@
 #Jean Salac
-#Unit 2 Question Generator. Run with the following command: python unit2QuestionGenerator.py studentInfo.csv
+#Unit 2 Question Generator. Run with the following command: python unit2QuestionGenerator.py scratchStudioURL
 
 import sys
 import json
@@ -9,6 +9,7 @@ import copy
 import re
 import random
 import time
+from bs4 import BeautifulSoup
 
 
 #Scratch Sprite Class
@@ -42,7 +43,6 @@ class Project(object):
 	scripts = ''
 	questions = ''
 	username = '' #Scratch username
-	studentID = '' #Student ID
 	lenQ7 = 4 #Num blocks in q7 script. Default is 4
 
 	def __init__(self, ID):
@@ -50,7 +50,6 @@ class Project(object):
 		self.scripts = []
 		self.questions = []
 		self.username = ''
-		self.studentID = ''
 		self.lenQ7 = 4
 
 	def __str__(self):
@@ -97,6 +96,18 @@ def scratch_to_API(scratch_URL):
 			project_id = project_id+char
 	api_URL = api_prefix + project_id + api_suffix
 	return api_URL
+
+#Method to convert Studio URL to URL needed to get Scratch IDs
+def studio_to_API(studio_URL):
+	api_prefix = "https://scratch.mit.edu/site-api/projects/in/"
+	api_suffix = "/1/"
+	project_id = "" 
+	for char in studio_URL:
+		if char.isdigit():
+			project_id = project_id+char
+	api_URL = api_prefix + project_id + api_suffix
+	return api_URL
+
 
 #Method to retrieve project ID from Scratch project URL
 def get_proj_id(scratch_URL):
@@ -266,17 +277,17 @@ def decideCustom(list, numQ, Question, csvCustom, csvNoCustom):
 			for x in range(0, len(list)):
 				if x < len(list)/2: #First half gets noncustom question
 					list[x].questions[numQ] = copy.deepcopy(Question)
-					print>>csvNoCustom, list[x].studentID+','+list[x].username+','+list[x].ID
+					print>>csvNoCustom, list[x].username+','+list[x].ID
 				else:
-					print>>csvCustom, list[x].studentID+','+list[x].username+','+list[x].ID
+					print>>csvCustom, list[x].username+','+list[x].ID
 		else:
 			random.shuffle(list)
 			for x in range(0, len(list)-1):
 				if x < len(list)/2: #First half gets noncustom question
 					list[x].questions[numQ] = copy.deepcopy(Question)
-					print>>csvNoCustom, list[x].studentID+','+list[x].username+','+list[x].ID
+					print>>csvNoCustom, list[x].username+','+list[x].ID
 				else:
-					print>>csvCustom, list[x].studentID+','+list[x].username+','+list[x].ID
+					print>>csvCustom, list[x].username+','+list[x].ID
 			
 			#Last odd element custom/generic is based on timestamp
 			ts = str(time.time())
@@ -284,9 +295,9 @@ def decideCustom(list, numQ, Question, csvCustom, csvNoCustom):
 			last = len(list)-1
 			if rand_digit%2==0: #If even, get a generic question
 				list[last].questions[numQ] = copy.deepcopy(Question)
-				print>>csvNoCustom, list[last].studentID+','+list[last].username+','+list[last].ID
+				print>>csvNoCustom, list[last].username+','+list[last].ID
 			else:
-				print>>csvCustom, list[last].studentID+','+list[last].username+','+list[last].ID
+				print>>csvCustom, list[last].username+','+list[last].ID
 
 
 
@@ -454,11 +465,6 @@ def populate_exc_opcodes():
 
 def main():
 	
-	#Read URLs from csv file and put them in a list
-	csv_file = sys.argv[1]
-	linesInFile = open(csv_file).readlines()
-	#urls = []
-
 	#Populate lists of opcodes necessary
 	populate_bool_opcodes()
 	populate_c_opcodes()
@@ -471,6 +477,8 @@ def main():
 	populate_exc_opcodes()
 
 	#Global TeX splices for all tests
+	#Uncomment line below once picture generator is ready
+	#preamble = open("preamble.txt").read() 
 	prefix = open("prefix.txt").read()
 	q1_text = open("q1text.txt").read()
 	q1_prefix = open("q1_prefix.txt").read()
@@ -484,24 +492,48 @@ def main():
 
 	#Create a global lists of projects
 	projects = []
-	
-	for line in linesInFile:
-		line.rstrip()
-		lineParts = line.split(',')
+
+	#Create a csv of all Scratch usernames and project IDs
+	studentInfo = open('students.csv','w+')
+
+	#Take in Scratch Studio URL
+	studioURL = sys.argv[1]
+
+	#Convert studio URL to the one necessary for scraping Scratch usernames and project IDs
+	studio_api_url = studio_to_API(studioURL)
+	r = requests.get(studio_api_url, allow_redirects=True)
+	studio_html = r.content
+	studio_parser = BeautifulSoup(studio_html, "html.parser")
+
+
+	for project in studio_parser.find_all('li'):
+		#Find the span object with owner attribute
+		span_string = str(project.find("span","owner"))
+		
+		#Pull out scratch username
+		scratch_username = span_string.split(">")[2]
+		scratch_username = scratch_username[0:len(scratch_username)-3]
+		
+		#Get project ID
+		proj_id = project.get('data-id')
+
 		#Read json file from URL. Convert Scratch URL to Scratch API URL, then read file.
-		apiURL = scratch_to_API(lineParts[3])
+		apiURL = "http://projects.scratch.mit.edu/internalapi/project/"+proj_id+"/get/"
 		json_stream = requests.get(apiURL, allow_redirects=True)
-		proj_id = get_proj_id(lineParts[3])
-		json_filename = lineParts[2]+".json"
+		json_filename = scratch_username+".json"
 		open(json_filename, 'wb').write(json_stream.content)
 		json_data= open(json_filename, "r")
 		data = json.load(json_data)
 		json_data.close()
 
+		#Print to students.csv
+		studentInfoLine = scratch_username+","+"https://scratch.mit.edu/projects/"+proj_id+"/"
+		print>>studentInfo, studentInfoLine
+
+
 		#Create a project object for this project
 		newProject = make_project(proj_id)
-		newProject.studentID = lineParts[1]
-		newProject.username = lineParts[2]
+		newProject.username = scratch_username
 		projects.append(newProject)
 
 		#Process parent sprite (background, stage, etc)
@@ -629,11 +661,10 @@ def main():
 		#Open a file that contains all the customized scripts
 		customTestName = project.username+"_custom.txt"
 		customTest = open(customTestName,'w+')
-		print>>customTest, 'Student ID: '+ project.studentID+ '\n'+ 'Scratch Username: '+ project.username+'\n'+'Project ID: '+project.ID+'\n'
 
 		#Convert lists to strings to make it easier to convert to Scratchblocks format
 		for question in project.questions:
-			print>>customTest,question.ID
+			#print>>customTest,question.ID
 			
 			#Shuffle scripts for q3
 			if question.ID == 'Question 3':
@@ -850,7 +881,7 @@ def main():
 
 				#Print blocks in Scratchblocks format
 			for x in range(0, len(question.scrBlks)):
-				print>>customTest, "Script "+str(x)+":"
+				print>>customTest, "Script"
 				print>>customTest, question.scrBlks[x]
 
 			#Count the number of blocks in Q7
@@ -878,6 +909,8 @@ def main():
 		texFileName = project.username+'_test.tex'
 		texFile = open(texFileName,'w+')
 		texString = prefix+project.username+"\n"+q1+q2to6+ans3line+"\n"+q7tex+q7ans+suffix
+		#Switch line above for the line below once pic generator is ready
+		#texString = preamble+project.username+prefix+project.username+"\n"+q1+q2to6+ans3line+"\n"+q7tex+q7ans+suffix
 		print>>texFile, texString
 
 

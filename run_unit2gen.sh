@@ -1,25 +1,25 @@
 #!/bin/bash
 
-#Run with ./run_unit2gen.sh [dynamic folder path] [template folder path]
+#Run with ./run_unit2gen.sh [studioURL] [dynamic folder path] [template folder path]
 
-cp -a "$2/." $1
+cp -a "$3/." $2
 
 #Go into timestamp folder
-cd $1
+cd $2
 
 #Change permissions on Question Generator
 chmod +x unit2QuestionGenerator.py
 
 #Run question generator
-python unit2QuestionGenerator.py students.csv
+python unit2QuestionGenerator.py $1
 
 #Read csv of students
 IFS=","
-while read f1 f2 f3 f4
+while read f1 f2
 do
         #Delete unnecessary files
-        rm "$f3".json
-        rm "$f3"_jsonString.txt
+        rm "$f1".json
+        rm "$f1"_jsonString.txt
         
         #plug in picture generator here; returns svg fils
 
@@ -27,17 +27,18 @@ do
         #convert svgs to pngs
         #for file in *.svg; do inkscape $file -e ${file%svg}png; done
         
-        #mkdir "$f3"_images
-        #mv *.png "$f3"_images
+        #mkdir "$f1"_images
+        #mv *.png "$f1"_images
         
         #Generate pdfs
-        pdflatex "$f3"_test.tex
+        pdflatex "$f1"_test.tex
 
 done < students.csv
 
 #Get rid of extra files
 rm *.aux
 rm *.log
+rm *_custom.txt
 
 #Merge all the pdfs
 pdfunite *.pdf all_tests.pdf
