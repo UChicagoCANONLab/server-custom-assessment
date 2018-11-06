@@ -664,8 +664,7 @@ def main():
 
 		#Convert lists to strings to make it easier to convert to Scratchblocks format
 		for question in project.questions:
-			#print>>customTest,question.ID
-			
+
 			#Shuffle scripts for q3
 			if question.ID == 'Question 3':
 				random.shuffle(question.scripts)
@@ -690,17 +689,18 @@ def main():
 					for char in split:
 						if char != '[' and char != ']':
 							cleanString = cleanString+char
-					#If the first character is u, remove it.
-					if cleanString[0] =='u':
-						cleanString = cleanString[1:len(cleanString)]
+					if len(cleanString)>0:
+						#If the first character is u, remove it.
+						if cleanString[0] =='u':
+							cleanString = cleanString[1:len(cleanString)]
 
-					#Remove the apostrophes from first and last characters
-					if cleanString[0] == '\'' and cleanString[len(cleanString)-1] == '\'':
-						cleanString = cleanString[1:len(cleanString)-1]
+						#Remove the apostrophes from first and last characters
+						if cleanString[0] == '\'' and cleanString[len(cleanString)-1] == '\'':
+							cleanString = cleanString[1:len(cleanString)-1]
 
-					#Remove "" from first and last characters
-					if cleanString[0] == '"' and cleanString[len(cleanString)-1] == '"':
-						cleanString = cleanString[1:len(cleanString)-1]
+						#Remove "" from first and last characters
+						if cleanString[0] == '"' and cleanString[len(cleanString)-1] == '"':
+							cleanString = cleanString[1:len(cleanString)-1]
 
 					# splitList[j]=cleanString
 					cleanStrings.append(cleanString)
